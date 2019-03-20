@@ -1,7 +1,7 @@
 # Storyblok Focus Point plugin
 
 ##Installing the plugin in your storyblok space 
-To use focus point plugin you need to compile and minify the plugin. Go to /plugin folder and do:
+To use focus point plugin you need to compile and minify the plugin. Go to `/plugin` folder and do:
 #### Compiles and minifies for production
 ```
 npm install
@@ -17,6 +17,7 @@ The plugin will be available in your storyblok component schemas.
 ##### More info on storyblok plugin usage/implementation: 
 https://www.storyblok.com/docs/Guides/Creating-a-field-type-plugin
 
+---
 
 ##Using the plugin output in your components
 The output of the plugin has this structure:
@@ -40,7 +41,8 @@ The output of the plugin has this structure:
 * `focusPoint` - selected focus point (percentage)
 
 You can use this data with our javascript helper function.  
-In the file `/helper/image.js` there's a function `resizeWithFocusPoint(image, originalSize, focusPoint, size, quality)`
+In the file `/helper/image.js` there's a function `resizeWithFocusPoint(image, originalSize, focusPoint, size, quality)`  
+
 * `image` - original image url  
 * `originalSize` - original image size (px) 
 * `focusPoint` - focus point (percentage)
@@ -57,7 +59,7 @@ Returns the generated image url and the size of the new image:
   }
 }
 ```
-####Usage example in react: 
+###Usage example in react: 
 
 ```JSX
 import { resizeWithFocusPoint } from '../helpers/image';
@@ -72,7 +74,7 @@ const focusPoint = story.content.heroImage;
 <img src={resizeWithFocusPoint(focusPoint.image, focusPoint.imageSize, focusPoint.focusPoint, size).url} />
 ```
 
-####Usage example in vue: 
+###Usage example in vue: 
 
 ```vue
 import { resizeWithFocusPoint } from '../helpers/image';
@@ -82,6 +84,6 @@ import { resizeWithFocusPoint } from '../helpers/image';
 <img :src={resizeWithFocusPoint(focusPoint.image, focusPoint.imageSize, focusPoint.focusPoint, size).url} />
 ```
   
-- 
+
 ######Notes:
 Storyblok only allows resizes up to 2000x2000px - in resizing functions we have a const STORYBLOK_IMAGE_SIZE_LIMIT that can be updated if/when storyblok increases this value.

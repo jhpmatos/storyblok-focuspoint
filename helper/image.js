@@ -1,39 +1,47 @@
-function resizeWithFocusPoint(image, originalSize, focusPoint, size, quality = 90) {
-    const STORYBLOK_IMAGE_SIZE_LIMIT = 2000
-    let maxOriginalSize = originalSize
+const STORYBLOK_IMAGE_SIZE_LIMIT = 4000
+const QUALITY_DEFAULT = 90
 
+function resizeWithFocusPointSrcSet(
+    image,
+    originalSize,
+    focusPoint,
+    srcSet,
+    quality = QUALITY_DEFAULT
+) {
+    return srcSet.map(size => {
+        const resizedImg = resizeWithFocusPoint(
+            image,
+            originalSize,
+            focusPoint,
+            {
+                width: size.width,
+                height: size.height,
+            },
+            quality
+        )
+
+        return `${resizedImg.url} ${size.srcSetSize}`
+    })
+}
+
+function resizeWithFocusPoint(
+    image,
+    originalSize,
+    focusPoint,
+    size,
+    quality = QUALITY_DEFAULT
+) {
     if (image === undefined || image.length === 0)
         return { url: '', size: { width: 0, height: 0 } }
 
-    // as the service only allows images up to 2000x2000 we do some math to make sure the resize is correct
-    if (size.width > STORYBLOK_IMAGE_SIZE_LIMIT) {
-        size.height = Math.round(
-            (STORYBLOK_IMAGE_SIZE_LIMIT * size.height) / size.width
-        )
-        size.width = STORYBLOK_IMAGE_SIZE_LIMIT
-    }
-    if (size.height > STORYBLOK_IMAGE_SIZE_LIMIT) {
-        size.width = Math.round(
-            (STORYBLOK_IMAGE_SIZE_LIMIT * size.width) / size.height
-        )
-        size.height = STORYBLOK_IMAGE_SIZE_LIMIT
-    }
-    //--
+    // as the service only allows images up to 4000x4000 we do some math to make sure the resize is correct
+    size = calculateMaxSize(size, STORYBLOK_IMAGE_SIZE_LIMIT)
 
-    // this bit is to deal with resize coordinates if image original image is bigger than STORYBLOK_IMAGE_SIZE_LIMIT
-    if (originalSize.width > STORYBLOK_IMAGE_SIZE_LIMIT) {
-        maxOriginalSize.height = Math.round(
-            (STORYBLOK_IMAGE_SIZE_LIMIT * originalSize.height) / originalSize.width
-        )
-        maxOriginalSize.width = STORYBLOK_IMAGE_SIZE_LIMIT
-    }
-
-    if (originalSize.height > STORYBLOK_IMAGE_SIZE_LIMIT) {
-        maxOriginalSize.width = Math.round(
-            (STORYBLOK_IMAGE_SIZE_LIMIT * originalSize.width) / originalSize.height
-        )
-        maxOriginalSize.height = STORYBLOK_IMAGE_SIZE_LIMIT
-    }
+    // this bit is to deal with resize coordinates if image original size is bigger than STORYBLOK_IMAGE_SIZE_LIMIT
+    const maxOriginalSize = calculateMaxSize(
+        originalSize,
+        STORYBLOK_IMAGE_SIZE_LIMIT
+    )
 
     const sizeOption = `${size.width}x${size.height}/`
     const focusInPx = {
@@ -55,4 +63,20 @@ function resizeWithFocusPoint(image, originalSize, focusPoint, size, quality = 9
     }
 }
 
-export { resizeWithFocusPoint }
+function calculateMaxSize(size, sizeLimit) {
+    const newSize = size
+
+    if (newSize.width > sizeLimit) {
+        newSize.height = Math.round((sizeLimit * size.height) / size.width)
+        newSize.width = sizeLimit
+    }
+
+    if (newSize.height > sizeLimit) {
+        newSize.width = Math.round((sizeLimit * size.width) / size.height)
+        newSize.height = sizeLimit
+    }
+
+    return newSize
+}
+
+export { resizeWithFocusPoint, resizeWithFocusPointSrcSet }

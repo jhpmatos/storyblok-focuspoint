@@ -40,7 +40,11 @@ The output of the plugin has this structure:
 * `imageSize` - original image size (px) 
 * `focusPoint` - selected focus point (percentage)
 
-You can use this data with our javascript helper function.  
+
+---
+
+##Javascript helper functions
+You can use the data retrived from the plugin with our javascript helper functions.  
 In the file `/helper/image.js` there's a function `resizeWithFocusPoint(image, originalSize, focusPoint, size, quality)`  
 
 * `image` - original image url  
@@ -59,7 +63,7 @@ Returns the generated image url and the size of the new image:
   }
 }
 ```
-###Usage example in react: 
+####Usage example in react: 
 
 ```JSX
 import { resizeWithFocusPoint } from '../helpers/image';
@@ -74,16 +78,38 @@ const focusPoint = story.content.heroImage;
 <img src={resizeWithFocusPoint(focusPoint.image, focusPoint.imageSize, focusPoint.focusPoint, size).url} />
 ```
 
-###Usage example in vue: 
+###srcSet
+There's also a helper that returns an array with srcsets: `resizeWithFocusPointSrcSet(image, originalSize, focusPoint, srcSet, quality)`
+The parameters are similar to `resizeWithFocusPoint()` the only difference is the `srcSet`:
 
-```vue
-import { resizeWithFocusPoint } from '../helpers/image';
+* `srcSet`: an array of objects { width, height, srcSetSize }   
+
+####Usage example in react: 
+```JSX
+import { resizeWithFocusPointSrcSet } from '../helpers/image';
 
 //...
 
-<img :src={resizeWithFocusPoint(focusPoint.image, focusPoint.imageSize, focusPoint.focusPoint, size).url} />
+<img
+    src={resizeWithFocusPoint(
+      focusPointItem.image,
+      focusPointItem.imageSize,
+      focusPointItem.focusPoint,
+      size
+    ).url}
+    srcSet={resizeWithFocusPointSrcset(
+      focusPointItem.image,
+      focusPointItem.imageSize,
+      focusPointItem.focusPoint,
+      [
+        { width: 400, height: 300, srcSetSize: '500w' },
+        { width: 1000, height: 0, srcSetSize: '1000w' },
+      ]
+    )}
+/>
 ```
-  
 
 ######Notes:
-Storyblok only allows resizes up to 2000x2000px - in resizing functions we have a const STORYBLOK_IMAGE_SIZE_LIMIT that can be updated if/when storyblok increases this value.
+Storyblok only allows resizes up to 4000x4000px - in resizing functions we have a const `STORYBLOK_IMAGE_SIZE_LIMIT` that can be updated if/when storyblok changes this value.
+You can set `QUALITY_DEFAULT` in helper file.
+When the `width` or `height` value is set to `0` the resize is done keeping the original image aspect ratio. 

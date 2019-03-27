@@ -96,23 +96,30 @@
           </div>
         </template>
 
-        <div class="uk-form-row">
-          <sb-asset-selector :uid="uid" field="image"></sb-asset-selector>
-          <button
-            @click="openBynderGallery"
-            class="uk-button uk-button-secondary"
-            type="button"
-          >
-            Open bynder gallery
-          </button>
-          <div style="min-height: 500px" v-show="showBynderGallery">
-            <div
-              id="bynder-compactview"
-              data-assetTypes="image"
-              data-fullScreen="true"
-              data-mode="single"
-              data-autoload="true"
-            ></div>
+        <div class="uk-flex">
+          <div style="flex: 1;margin-right: 16px">
+            <sb-asset-selector :uid="uid" field="image"></sb-asset-selector>
+          </div>
+          <div style="flex: 1">
+            <button
+              style="width: 100%"
+              @click="openBynderGallery"
+              class="uk-button uk-button-secondary"
+              type="button"
+              v-if="this.options.oauthToken"
+            >
+              Open bynder gallery
+            </button>
+            <div style="min-height: 500px" v-show="showBynderGallery">
+              <div
+                id="bynder-compactview"
+                data-assetTypes="image"
+                data-fullScreen="true"
+                data-mode="single"
+                data-autoload="true"
+                :data-defaultEnvironment="this.options.bynderDefaultEnv"
+              ></div>
+            </div>
           </div>
         </div>
       </section>

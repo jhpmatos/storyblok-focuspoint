@@ -112,4 +112,11 @@ import { resizeWithFocusPointSrcSet } from '../helpers/image';
 ######Notes:
 Storyblok only allows resizes up to 4000x4000px - in resizing functions we have a const `STORYBLOK_IMAGE_SIZE_LIMIT` that can be updated if/when storyblok changes this value.
 You can set `QUALITY_DEFAULT` in helper file.
-When the `width` or `height` value is set to `0` the resize is done keeping the original image aspect ratio. 
+When the `width` or `height` value is set to `0` the resize is done keeping the original image aspect ratio.
+
+##Bynder support
+This plugin supports bynder, in order to use it you need to provide the following options:
+
+* `oauthToken`: storyblok personal access token (you can get one in your storyblok / my account menu)
+* `bynderDerivative`: optional - you can pass a specific bynder derivative (image transform) - if none is provided it will use `webimage` by default 
+* `bynderDefaultEnv`: optional - set a default environment for the Compact View, e.g.: https://educationfirst.getbynder.com  

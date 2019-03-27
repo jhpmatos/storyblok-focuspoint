@@ -8,14 +8,21 @@
             @click="openModal"
             type="button"
             class="uk-form-file uk-button uk-button-small uk-button-primary"
-          >Upload image and set focus</button>
+          >
+            Upload image and set focus
+          </button>
           <div class="uk-margin-small-bottom uk-margin-top">
-            <p v-if="!model.image">No image selected, please upload an image first.</p>
-            <template v-else>Preview:
+            <p v-if="!model.image">
+              No image selected, please upload an image first.
+            </p>
+            <template v-else
+              >Preview:
               <div class="image__container">
-                <img :src="imagePreview" @load="onPreviewLoaded">
+                <img :src="imagePreview" @load="onPreviewLoaded" />
                 <span
-                  :style="`top:${model.focusPoint.y}%;left:${model.focusPoint.x}%;`"
+                  :style="
+                    `top:${model.focusPoint.y}%;left:${model.focusPoint.x}%;`
+                  "
                   class="focus-picker__marker"
                 />
               </div>
@@ -29,16 +36,26 @@
     <div v-show="modalIsOpen">
       <div class="top-bar">
         <div>
-          <button class="uk-button uk-button-primary" type="button" @click="closeModal">
+          <button
+            class="uk-button uk-button-primary"
+            type="button"
+            @click="closeModal"
+          >
             <i class="uk-icon-check"></i> Done
           </button>
         </div>
       </div>
       <section class="modal__content">
-        <p v-if="!model.image">No image selected, please upload an image first.</p>
+        <p v-if="!model.image">
+          No image selected, please upload an image first.
+        </p>
         <template v-else>
           <div class="focus-picker">
-            <img :src="model.image" @click="setCoordinates" @load="onImageLoaded">
+            <img
+              :src="model.image"
+              @click="setCoordinates"
+              @load="onImageLoaded"
+            />
             <span
               :style="`top:${model.focusPoint.y}%;left:${model.focusPoint.x}%;`"
               class="focus-picker__marker"
@@ -48,14 +65,20 @@
             <div>
               <label class="form__topic">
                 X %
-                <input v-model="model.focusPoint.x" class="uk-form-small uk-form-width-small">
+                <input
+                  v-model="model.focusPoint.x"
+                  class="uk-form-small uk-form-width-small"
+                />
               </label>
             </div>
 
             <div class="uk-margin-left">
               <label class="form__topic">
                 Y %
-                <input v-model="model.focusPoint.y" class="uk-form-small uk-form-width-small">
+                <input
+                  v-model="model.focusPoint.y"
+                  class="uk-form-small uk-form-width-small"
+                />
               </label>
             </div>
 
@@ -65,7 +88,9 @@
                   class="uk-button uk-button-secondary"
                   type="button"
                   @click="centerFocus"
-                >Center</button>
+                >
+                  Center
+                </button>
               </label>
             </div>
           </div>
@@ -73,8 +98,27 @@
 
         <div class="uk-form-row">
           <sb-asset-selector :uid="uid" field="image"></sb-asset-selector>
+          <button
+            @click="openBynderGallery"
+            class="uk-button uk-button-secondary"
+            type="button"
+          >
+            Open bynder gallery
+          </button>
+          <div style="min-height: 500px" v-show="showBynderGallery">
+            <div
+              id="bynder-compactview"
+              data-assetTypes="image"
+              data-fullScreen="true"
+              data-mode="single"
+              data-autoload="true"
+            ></div>
+          </div>
         </div>
       </section>
+      <div v-if="isLoading" class="loading__overlay">
+        <div class="loading__spinner"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -85,7 +129,9 @@ export default {
   data() {
     return {
       modalIsOpen: false,
-      imagePreview: ""
+      imagePreview: "",
+      isLoading: false,
+      showBynderGallery: false
     };
   },
   methods: {
@@ -111,6 +157,98 @@ export default {
       }
       // eslint-disable-next-line
       console.log("plugin:created");
+
+      this.$sb.getScript(
+        "https://d8ejoa1fys2rk.cloudfront.net/modules/compactview/includes/js/client-1.4.0.min.js",
+        () => {
+          document.addEventListener("BynderAddMedia", media => {
+            if (media.detail.length === 1) {
+              const assetToImport = media.detail[0];
+
+              const urlToImport =
+                this.options.hasOwnProperty("bynderDerivative") &&
+                this.options.bynderDerivative !== ""
+                  ? assetToImport.thumbnails[this.options.bynderDerivative]
+                  : assetToImport.thumbnails.webimage;
+
+              this.showBynderGallery = false;
+
+              if (urlToImport !== undefined) {
+                const fileExtension = urlToImport.split(".").pop();
+
+                this.isLoading = true;
+
+                fetch(urlToImport)
+                  .then(res => res.blob()) // Gets the response and returns it as a blob
+                  .then(blob => {
+                    this.storyblokImageUpload(
+                      blob,
+                      `${assetToImport.name}.${fileExtension}`,
+                      image => {
+                        this.model.image = image.location;
+                      },
+                      error => {
+                        // eslint-disable-next-line
+                        console.log(error);
+                      }
+                    );
+                  })
+                  .finally(() => {
+                    this.isLoading = false;
+                  });
+              }
+            }
+          });
+        }
+      );
+    },
+    storyblokImageUpload(fileblob, filename, success, failure) {
+      this.api.client
+        .post(
+          `/spaces/${this.spaceId}/assets`,
+          { filename: filename },
+          {
+            headers: {
+              Authorization: this.options.oauthToken
+            }
+          } // uses the option with the name `oauthToken` which needs to be configured in the schema definition of the field you're using the plugin in.
+        )
+        .then(response => {
+          let request = new XMLHttpRequest();
+          request.withCredentials = false;
+          request.open("POST", response.data.post_url);
+
+          request.onreadystatechange = () => {
+            const allowedStatuses = [200, 201, 204];
+
+            if (request.readyState === 4) {
+              if (allowedStatuses.includes(request.status)) {
+                // eslint-disable-next-line
+                console.log("Image uploaded: " + response.data.pretty_url);
+                success({ location: response.data.pretty_url });
+              } else {
+                failure(
+                  new Error(
+                    `Error during upload with status: ${request.status}`
+                  )
+                );
+              }
+            }
+          };
+
+          let formData = new FormData();
+          for (let key in response.data.fields) {
+            formData.append(key, response.data.fields[key]);
+          }
+          formData.append("file", fileblob);
+          request.send(formData);
+        })
+        .catch(error => {
+          failure(error);
+        });
+    },
+    openBynderGallery() {
+      this.showBynderGallery = true;
     },
     getPreviewUrl() {
       return this.model.image.replace(
@@ -216,5 +354,37 @@ export default {
 
 .image__container {
   position: relative;
+}
+
+.loading__overlay {
+  background: rgba(0, 0, 0, 0.4);
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.loading__spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes spin {
+  to {
+    -webkit-transform: rotate(360deg);
+  }
 }
 </style>

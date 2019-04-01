@@ -258,10 +258,12 @@ export default {
       this.showBynderGallery = true;
     },
     getPreviewUrl() {
-      return this.model.image.replace(
-        "//a.storyblok.com",
-        "//img2.storyblok.com/400x0"
-      );
+      return this.model.image !== undefined
+        ? this.model.image.replace(
+            "//a.storyblok.com",
+            "//img2.storyblok.com/400x0"
+          )
+        : "";
     },
     setCoordinates(e) {
       const { height, width } = e.target;

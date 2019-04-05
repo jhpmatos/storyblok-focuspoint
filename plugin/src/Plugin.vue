@@ -200,7 +200,7 @@ export default {
                       }
                     );
                   })
-                  .finally(() => {
+                  .catch(() => {
                     this.isLoading = false;
                   });
               }
@@ -291,6 +291,7 @@ export default {
           width: width,
           height: height
         };
+        this.isLoading = false;
       });
     },
     openModal() {

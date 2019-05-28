@@ -34,6 +34,14 @@ function resizeWithFocusPoint(
     if (image === undefined || image.length === 0)
         return { url: '', size: { width: 0, height: 0 } }
 
+    //if we are dealing with an svg we don't crop/resize the image
+    if (image.endsWith('.svg')) {
+      return {
+        url: image,
+        size: size,
+      }
+    }
+
     // as the service only allows images up to 4000x4000 we do some math to make sure the resize is correct
     size = calculateMaxSize(size, STORYBLOK_IMAGE_SIZE_LIMIT)
 

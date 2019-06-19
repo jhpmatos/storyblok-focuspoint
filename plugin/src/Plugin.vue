@@ -110,12 +110,19 @@
             >
               Open bynder gallery
             </button>
-            <div style="min-height: 500px" v-show="showBynderGallery">
+            <div style="min-height: 85vh" v-show="showBynderGallery">
+              <button
+                class="uk-button button__close-bynder"
+                @click="closeBynderGallery"
+              >
+                Close
+              </button>
               <div
                 id="bynder-compactview"
                 data-assetTypes="image"
                 data-fullScreen="true"
                 data-mode="single"
+                data-shadowDom="false"
                 data-autoload="true"
                 :data-defaultEnvironment="this.options.bynderDefaultEnv"
               ></div>
@@ -166,7 +173,7 @@ export default {
       console.log("plugin:created");
 
       this.$sb.getScript(
-        "https://d8ejoa1fys2rk.cloudfront.net/modules/compactview/includes/js/client-1.4.0.min.js",
+        "https://d8ejoa1fys2rk.cloudfront.net/modules/compactview/includes/js/client-1.5.0.min.js",
         () => {
           document.addEventListener("BynderAddMedia", media => {
             if (media.detail.length === 1) {
@@ -256,6 +263,9 @@ export default {
     },
     openBynderGallery() {
       this.showBynderGallery = true;
+    },
+    closeBynderGallery() {
+      this.showBynderGallery = false;
     },
     getPreviewUrl() {
       if (this.model.image !== undefined) {
@@ -388,6 +398,15 @@ export default {
   border-radius: 50%;
   border-top-color: #fff;
   animation: spin 1s linear infinite;
+}
+
+button.button__close-bynder {
+  z-index: 101; /* to be over bynder */
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  border-radius: 4px;
+  height: 40px;
 }
 
 @keyframes spin {

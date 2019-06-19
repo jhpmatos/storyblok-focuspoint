@@ -110,7 +110,7 @@
             >
               Open bynder gallery
             </button>
-            <div style="min-height: 85vh" v-show="showBynderGallery">
+            <div style="min-height: 650px" v-show="showBynderGallery">
               <button
                 class="uk-button button__close-bynder"
                 @click="closeBynderGallery"

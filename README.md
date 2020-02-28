@@ -1,6 +1,6 @@
 # Storyblok Focus Point plugin
 
-##Installing the plugin in your storyblok space 
+## Installing the plugin in your storyblok space 
 To use focus point plugin you need to compile and minify the plugin. Go to `/plugin` folder and do:
 #### Compiles and minifies for production
 ```
@@ -19,7 +19,7 @@ https://www.storyblok.com/docs/Guides/Creating-a-field-type-plugin
 
 ---
 
-##Using the plugin output in your components
+## Using the plugin output in your components
 The output of the plugin has this structure:
 ```json
 {
@@ -43,7 +43,7 @@ The output of the plugin has this structure:
 
 ---
 
-##Javascript helper functions
+## Javascript helper functions
 You can use the data retrived from the plugin with our javascript helper functions.  
 In the file `/helper/image.js` there's a function `resizeWithFocusPoint(image, originalSize, focusPoint, size, quality)`  
 
@@ -63,7 +63,7 @@ Returns the generated image url and the size of the new image:
   }
 }
 ```
-####Usage example in react: 
+#### Usage example in react: 
 
 ```JSX
 import { resizeWithFocusPoint } from '../helpers/image';
@@ -78,13 +78,13 @@ const focusPoint = story.content.heroImage;
 <img src={resizeWithFocusPoint(focusPoint.image, focusPoint.imageSize, focusPoint.focusPoint, size).url} />
 ```
 
-###srcSet
+### srcSet
 There's also a helper that returns an array with srcsets: `resizeWithFocusPointSrcSet(image, originalSize, focusPoint, srcSet, quality)`
 The parameters are similar to `resizeWithFocusPoint()` the only difference is the `srcSet`:
 
 * `srcSet`: an array of objects { width, height, srcSetSize }   
 
-####Usage example in react: 
+#### Usage example in react: 
 ```JSX
 import { resizeWithFocusPointSrcSet } from '../helpers/image';
 
@@ -109,12 +109,12 @@ import { resizeWithFocusPointSrcSet } from '../helpers/image';
 />
 ```
 
-######Notes:
+###### Notes:
 Storyblok only allows resizes up to 4000x4000px - in resizing functions we have a const `STORYBLOK_IMAGE_SIZE_LIMIT` that can be updated if/when storyblok changes this value.
 You can set `QUALITY_DEFAULT` in helper file.
 When the `width` or `height` value is set to `0` the resize is done keeping the original image aspect ratio.
 
-##Bynder support
+## Bynder support
 This plugin supports bynder, in order to use it you need to provide the following options:
 
 * `oauthToken`: storyblok personal access token (you can get one in your storyblok / my account menu)

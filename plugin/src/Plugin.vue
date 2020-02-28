@@ -180,8 +180,10 @@ export default {
               const assetToImport = media.detail[0];
 
               const urlToImport =
-                this.options.hasOwnProperty("bynderDerivative") &&
-                this.options.bynderDerivative !== ""
+                Object.prototype.hasOwnProperty.call(
+                  this.options,
+                  "bynderDerivative"
+                ) && this.options.bynderDerivative !== ""
                   ? assetToImport.thumbnails[this.options.bynderDerivative]
                   : assetToImport.thumbnails.webimage;
 

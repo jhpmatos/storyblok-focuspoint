@@ -119,4 +119,4 @@ This plugin supports bynder, in order to use it you need to provide the followin
 
 * `oauthToken`: storyblok personal access token (you can get one in your storyblok / my account menu)
 * `bynderDerivative`: optional - you can pass a specific bynder derivative (image transform) - if none is provided it will use `webimage` by default 
-* `bynderDefaultEnv`: optional - set a default environment for the Compact View, e.g.: https://educationfirst.getbynder.com  
+* `bynderDefaultEnv`: optional - set a default environment for the Compact View, e.g.: https://youraccount.getbynder.com  

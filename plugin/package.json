@@ -1,18 +1,6 @@
 {
   "name": "storyblok-fieldtype-focus-point",
   "description": "A Storyblok Field-Type Focus Point Plugin Project",
-  "author": {
-    "name": "Storyblok",
-    "email": "it@storyblok.com",
-    "url": "https://www.storyblok.com/"
-  },
-  "contributors": [
-    {
-      "name": "João Matos",
-      "email": "joao.matos@ef.com"
-    }
-  ],
-  "private": true,
   "scripts": {
     "dev": "npm run serve",
     "serve": "vue-cli-service serve",

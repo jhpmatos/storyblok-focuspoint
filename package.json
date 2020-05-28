@@ -1,0 +1,18 @@
+{
+  "name": "storyblok-focuspoint",
+  "version": "1.0.0",
+  "description": "Storyblok focus point plugin with optional bynder support",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jhpmatos/storyblok-focuspoint.git"
+  },
+  "author": {
+    "name": "João Matos (jhpmatos)",
+    "email": "joao.matos@ef.com"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jhpmatos/storyblok-focuspoint/issues"
+  },
+  "homepage": "https://github.com/jhpmatos/storyblok-focuspoint#readme"
+}

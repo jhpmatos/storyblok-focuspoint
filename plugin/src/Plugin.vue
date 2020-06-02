@@ -37,6 +37,14 @@
       <div class="top-bar">
         <div>
           <button
+            v-if="showBynderGallery"
+            class="uk-button button__close-bynder"
+            @click="closeBynderGallery"
+          >
+            Close
+          </button>
+          <button
+            v-else
             class="uk-button uk-button-primary"
             type="button"
             @click="closeModal"
@@ -45,7 +53,10 @@
           </button>
         </div>
       </div>
-      <section class="modal__content">
+      <section
+        class="modal__content"
+        :class="{ 'bynder-opened': showBynderGallery }"
+      >
         <p v-if="!model.image">
           No image selected, please upload an image first.
         </p>
@@ -110,24 +121,10 @@
             >
               Open bynder gallery
             </button>
-            <div style="min-height: 650px" v-show="showBynderGallery">
-              <button
-                class="uk-button button__close-bynder"
-                @click="closeBynderGallery"
-              >
-                Close
-              </button>
-              <div
-                id="bynder-compactview"
-                data-assetTypes="image"
-                data-fullScreen="true"
-                data-mode="single"
-                data-shadowDom="false"
-                data-autoload="true"
-                :data-defaultEnvironment="this.options.bynderDefaultEnv"
-              ></div>
-            </div>
           </div>
+        </div>
+        <div class="bynder__wrapper" v-show="showBynderGallery">
+          <div id="bynder-compactview"></div>
         </div>
       </section>
       <div v-if="isLoading" class="loading__overlay">
@@ -173,45 +170,51 @@ export default {
       console.log("plugin:created");
 
       this.$sb.getScript(
-        "https://d8ejoa1fys2rk.cloudfront.net/modules/compactview/includes/js/client-1.5.0.min.js",
+        "https://d8ejoa1fys2rk.cloudfront.net/5.0.5/modules/compactview/bynder-compactview-2-latest.js",
         () => {
-          document.addEventListener("BynderAddMedia", media => {
-            if (media.detail.length === 1) {
-              const assetToImport = media.detail[0];
+          // eslint-disable-next-line
+          BynderCompactView.open({
+            mode: "SingleSelectFile",
+            assetTypes: ["IMAGE"],
+            container: document.getElementById("bynder-compactview"),
+            portal: { url: this.options.bynderDefaultEnv },
+            theme: {
+              colorButtonPrimary: "#09b3af"
+            },
+            onSuccess: (assets, additionalInfo) => {
+              if (assets.length === 1 && additionalInfo) {
+                const asset = assets[0];
+                const { selectedFile } = additionalInfo;
 
-              const urlToImport =
-                Object.prototype.hasOwnProperty.call(
-                  this.options,
-                  "bynderDerivative"
-                ) && this.options.bynderDerivative !== ""
-                  ? assetToImport.thumbnails[this.options.bynderDerivative]
-                  : assetToImport.thumbnails.webimage;
+                const urlToImport = selectedFile.url;
 
-              this.showBynderGallery = false;
+                this.showBynderGallery = false;
 
-              if (urlToImport !== undefined) {
-                const fileExtension = urlToImport.split(".").pop();
+                if (urlToImport !== undefined) {
+                  const fileExtension = urlToImport.split(".").pop();
 
-                this.isLoading = true;
+                  this.isLoading = true;
 
-                fetch(urlToImport)
-                  .then(res => res.blob()) // Gets the response and returns it as a blob
-                  .then(blob => {
-                    this.storyblokImageUpload(
-                      blob,
-                      `${assetToImport.name}.${fileExtension}`,
-                      image => {
-                        this.model.image = image.location;
-                      },
-                      error => {
-                        // eslint-disable-next-line
-                        console.log(error);
-                      }
-                    );
-                  })
-                  .catch(() => {
-                    this.isLoading = false;
-                  });
+                  fetch(urlToImport)
+                    .then(res => res.blob()) // Gets the response and returns it as a blob
+                    .then(blob => {
+                      this.storyblokImageUpload(
+                        blob,
+                        `${asset.name}.${fileExtension}`,
+                        image => {
+                          this.model.image = image.location;
+                          this.centerFocus();
+                        },
+                        error => {
+                          // eslint-disable-next-line
+                          console.log(error);
+                        }
+                      );
+                    })
+                    .catch(() => {
+                      this.isLoading = false;
+                    });
+                }
               }
             }
           });
@@ -348,11 +351,17 @@ export default {
 .top-bar {
   margin-bottom: 16px;
   text-align: right;
+  padding-right: 1px;
 }
 
 .modal__content {
   margin: auto;
   max-width: 800px;
+}
+.modal__content.bynder-opened {
+  position: relative;
+  min-height: 650px;
+  max-width: 100%;
 }
 
 .focus-picker {
@@ -402,13 +411,13 @@ export default {
   animation: spin 1s linear infinite;
 }
 
-button.button__close-bynder {
-  z-index: 101; /* to be over bynder */
+#bynder-compactview {
   position: absolute;
-  bottom: 10px;
-  left: 12px;
-  border-radius: 4px;
-  height: 40px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 650px;
 }
 
 @keyframes spin {

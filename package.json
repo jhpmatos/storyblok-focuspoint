@@ -1,6 +1,6 @@
 {
   "name": "storyblok-focuspoint",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Storyblok focus point plugin with optional bynder support",
   "repository": {
     "type": "git",

@@ -64,7 +64,7 @@ function resizeWithFocusPoint(
         }:${focusInPx.x + 1}x${focusInPx.y + 1}):quality(${quality})`
 
     const imageService = '//img2.storyblok.com/'
-    const path = image.replace('//a.storyblok.com', '')
+    const path = image.replace(/(https:)?\/\/a.storyblok.com/, '')
     return {
         url: imageService + sizeOption + focusPointOption + path,
         size: size,
